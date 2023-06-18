@@ -10,6 +10,9 @@ const TOKEN = process.env.TOKEN
 
 const LOAD_SLASH = process.argv[2] == "load"
 
+const GUILD_ID = "725100979204390983"
+const CLIENT_ID= "1119679143802585088"
+
 const client = new Discord.Client({
     intents: [
         Discord.IntentsBitField.Flags.GuildMessages, 
@@ -29,9 +32,9 @@ client.player = new Player(client, {
 
 let commands = []
 
-const slashFiles = fs.readdirSync("commands").filter(file => file.endsWith(".js"))
+const slashFiles = fs.readdirSync("./slash").filter(file => file.endsWith(".js"))
 for (const file of slashFiles){
-    const slashcmd = require(`commands/${file}`)
+    const slashcmd = require(`./slash/${file}`)
     client.slashcommands.set(slashcmd.data.name, slashcmd)
     if (LOAD_SLASH) commands.push(slashcmd.data.toJSON())
 }
@@ -39,6 +42,7 @@ for (const file of slashFiles){
 if (LOAD_SLASH) {
     const rest = new REST({ version: "9" }).setToken(TOKEN)
     console.log("Deploying slash commands")
+    debugger
     rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
     .then(() => {
         console.log("Successfully loaded")
