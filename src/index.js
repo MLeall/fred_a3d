@@ -1,69 +1,71 @@
-require("dotenv").config();
+const Discord = require("discord.js")
+const dotenv = require("dotenv")
+const { REST } = require("@discordjs/rest")
+const { Routes } = require("discord-api-types/v9")
+const fs = require("fs")
+const { Player } = require("discord-player")
 
-const { REST } = require ("@discordjs/rest");
-const { Routes } = require ("discord-api-types/v9");
-const { Client, Intents, Collection, InteractionCollector } = require ("discord.js");
-const { Player } = require ("discord-player");
+dotenv.config()
+const TOKEN = process.env.TOKEN
 
-const fs = require("node:fs");
-const path = require("node:path");
-const internal = require("node:stream");
+const LOAD_SLASH = process.argv[2] == "load"
 
-const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, 
-        Intents.FLAGS.GUILD_MESSAGE, 
-        Intents.FLAGS.GUILD_VOICE_STATES]
+const client = new Discord.Client({
+    intents: [
+        Discord.IntentsBitField.Flags.GuildMessages, 
+        Discord.IntentsBitField.Flags.MessageContent, 
+        Discord.IntentsBitField.Flags.GuildVoiceStates
+    ]
 });
 
 // Loading commands
-const commands = [];
-client.commands = new Collection();
-
-const commandsPath = path.join(__dirname, "commands");
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-
-for (const file of commandFiles)
-{
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-
-    client.commands.set(command.data.name, command);
-    commands.push(command);
-}
-
+client.slashcommands = new Discord.Collection()
 client.player = new Player(client, {
     ytdlOptions: {
         quality: "highestaudio",
-        highWaterMar: 1 << 25
+        highWaterMark: 1 << 25
     }
-});
+})
 
-client.on("ready", () => {
-    const guild_ids = client.guilds.cache.map(guild => guild.id);
+let commands = []
 
-    const rest = new REST({version: "9"}).setToken(process.env.TOKEN);
-    for (const guildId of guild_ids)
-    {
-        rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, guildId), {
-            body: commands
-        })
-        .then(() => console.log(`Added commands to ${guildId}`))
-        .catch(console.error);
-    }
-});
+const slashFiles = fs.readdirSync("commands").filter(file => file.endsWith(".js"))
+for (const file of slashFiles){
+    const slashcmd = require(`commands/${file}`)
+    client.slashcommands.set(slashcmd.data.name, slashcmd)
+    if (LOAD_SLASH) commands.push(slashcmd.data.toJSON())
+}
 
-client.on("interactionCreate", async interaction => {
-    if(!interaction.isCommand()) return;
+if (LOAD_SLASH) {
+    const rest = new REST({ version: "9" }).setToken(TOKEN)
+    console.log("Deploying slash commands")
+    rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
+    .then(() => {
+        console.log("Successfully loaded")
+        process.exit(0)
+    })
+    .catch((err) => {
+        if (err){
+            console.log(err)
+            process.exit(1)
+        }
+    })
+}
+else {
+    client.on("ready", () => {
+        console.log(`Logged in as ${client.user.tag}`)
+    })
+    client.on("interactionCreate", (interaction) => {
+        async function handleCommand() {
+            if (!interaction.isCommand()) return
 
-    try
-    {
-        await command.execute({client, interaction});
-    }
-    catch(err)
-    {
-        console.error(err);
-        await interaction.reply("Error while executing command")
-    }
-});
+            const slashcmd = client.slashcommands.get(interaction.commandName)
+            if (!slashcmd) interaction.reply("Not a valid slash command")
 
-client.login(process.env.TOKEN);
+            await interaction.deferReply()
+            await slashcmd.run({ client, interaction })
+        }
+        handleCommand()
+    })
+    client.login(TOKEN)
+}
