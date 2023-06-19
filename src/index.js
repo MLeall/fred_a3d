@@ -1,5 +1,6 @@
 const Discord = require("discord.js")
 const dotenv = require("dotenv")
+const { GatewayIntentBits } = require("discord.js")
 const { REST } = require("@discordjs/rest")
 const { Routes } = require("discord-api-types/v9")
 const fs = require("fs")
@@ -15,9 +16,11 @@ const CLIENT_ID= "1119679143802585088"
 
 const client = new Discord.Client({
     intents: [
-        Discord.IntentsBitField.Flags.GuildMessages, 
-        Discord.IntentsBitField.Flags.MessageContent, 
-        Discord.IntentsBitField.Flags.GuildVoiceStates
+        GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates,
+		GatewayIntentBits.GuildMembers,
     ]
 });
 
@@ -42,7 +45,6 @@ for (const file of slashFiles){
 if (LOAD_SLASH) {
     const rest = new REST({ version: "9" }).setToken(TOKEN)
     console.log("Deploying slash commands")
-    debugger
     rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
     .then(() => {
         console.log("Successfully loaded")
