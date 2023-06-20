@@ -3,8 +3,9 @@ const dotenv = require("dotenv")
 const { GatewayIntentBits } = require("discord.js")
 const { REST } = require("@discordjs/rest")
 const { Routes } = require("discord-api-types/v9")
-const fs = require("fs")
+
 const { Player } = require("discord-player")
+const fs = require("fs")
 
 dotenv.config()
 const TOKEN = process.env.TOKEN

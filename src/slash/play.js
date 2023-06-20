@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageEmbed } = require("discord.js")
+const { EmbedBuilder } = require("discord.js")
 const { QueryType } = require("discord-player")
+const { YouTubeExtractor, SpotifyExtractor} = require("@discord-player/extractor");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -27,6 +28,9 @@ module.exports = {
 				)
 		),
 	run: async ({ client, interaction }) => {
+        client.player.extractors.register(YouTubeExtractor);
+        client.player.extractors.register(SpotifyExtractor);
+
         const completeMember = await interaction.guild.members.fetch(interaction.member.user.id)
 		if (!completeMember.voice.channel) return interaction.editReply("You need to be in a VC to use this command")
 
@@ -47,8 +51,8 @@ module.exports = {
 
 		if (!queue.connection) await queue.connect(completeMember.voice.channel)
 
-		let embed = new MessageEmbed()
-
+		let embed = new EmbedBuilder()
+        
 		if (interaction.options.getSubcommand() === "song") {
             let url = interaction.options.getString("url")
             const result = await client.player.search(url, {
@@ -60,7 +64,7 @@ module.exports = {
             
             const song = result.tracks[0]
             await queue.addTrack(song)
-            embed
+            MessageEmbed
                 .setDescription(`**[${song.title}](${song.url})** has been added to the Queue`)
                 .setThumbnail(song.thumbnail)
                 .setFooter({ text: `Duration: ${song.duration}`})
@@ -86,7 +90,7 @@ module.exports = {
                 requestedBy: interaction.user,
                 searchEngine: QueryType.AUTO
             })
-
+            console.log("result.track: ", result.tracks[0])
             if (result.tracks.length === 0)
                 return interaction.editReply("No results")
             
