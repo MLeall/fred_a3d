@@ -6,7 +6,7 @@ const { YouTubeExtractor, SpotifyExtractor} = require("@discord-player/extractor
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("play")
-		.setDescription("Add songs to queue.")
+		.setDescription("Play songs/playlists in your voice channel.")
         .addStringOption((option) => option.setName("searchterms").setDescription("params for song or playlist").setRequired(true)),
 	run: async ({ client, interaction }) => {
         client.player.extractors.register(YouTubeExtractor);
