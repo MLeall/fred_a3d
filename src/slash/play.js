@@ -6,8 +6,8 @@ const { YouTubeExtractor, SpotifyExtractor} = require("@discord-player/extractor
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("play")
-		.setDescription("Play songs/playlists in your voice channel.")
-        .addStringOption((option) => option.setName("searchterms").setDescription("params for song or playlist").setRequired(true)),
+		.setDescription("Lança as mais brabas no seu chat de voz.")
+        .addStringOption((option) => option.setName("oqbuscas").setDescription("params for song or playlist").setRequired(true)),
 	run: async ({ client, interaction }) => {
         client.player.extractors.register(YouTubeExtractor);
         client.player.extractors.register(SpotifyExtractor);
@@ -34,29 +34,29 @@ module.exports = {
 
 		let embed = new EmbedBuilder()
         
-        let url = interaction.options.getString("searchterms")
+        let url = interaction.options.getString("oqbuscas")
         const result = await client.player.search(url, {
             requestedBy: interaction.user,
             searchEngine: QueryType.AUTO
         })
 
         if (!result.hasTracks())
-            return interaction.editReply("No results")
+            return interaction.editReply("Nada encontrado")
 
         if (result.playlist) {
             await queue.addTrack(result.playlist.tracks)
             playlist = result.playlist;
             embed
-            .setDescription(`**${playlist.title}**\nHas been added to the Queue`)
+            .setDescription(`**${playlist.title}**\nEssa lista de pedrada foi adicionada a sua fila`)
             .setThumbnail(playlist.thumbnail)
-            .setFooter({ text: `Musics: ${playlist.tracks.length}`})
+            .setFooter({ text: `Musicas: ${playlist.tracks.length}`})
         } else {
             await queue.addTrack(result.tracks[0])
             song = result.tracks[0];
             embed
-            .setDescription(`**${song.title}**\nHas been added to the Queue`)
+            .setDescription(`**${song.title}**\nEssa pedrada foi adicionada a sua fila`)
             .setThumbnail(song.thumbnail)
-            .setFooter({ text: `Duration: ${song.duration}`})
+            .setFooter({ text: `Duração: ${song.duration}`})
         }
 		
         if (!queue.isPlaying()) await queue.node.play()

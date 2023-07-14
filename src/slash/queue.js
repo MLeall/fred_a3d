@@ -19,8 +19,8 @@ module.exports = {
 
         if (page > totalPages) 
             return await interaction.editReply(`Invalid Page. There are only a total of ${totalPages} pages of songs`)
-        
-        const queueString = queue.node.tracks.slice(page * 10, page * 10 + 10).map((song, i) => {
+
+        const queueString = queue.tracks.data.slice(page * 10, page * 10 + 10).map((song, i) => {
             return `**${page * 10 + i + 1}.** \`[${song.duration}]\` ${song.title} -- <@${song.requestedBy.id}>`
         }).join("\n")
 

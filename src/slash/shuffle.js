@@ -2,13 +2,13 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { useQueue  } = require("discord-player")
 
 module.exports = {
-	data: new SlashCommandBuilder().setName("shuffle").setDescription("Shuffles the queue"),
+	data: new SlashCommandBuilder().setName("shuffle").setDescription("Embaralha a fila."),
 	run: async ({ interaction }) => {
 		const queue = useQueue(interaction.guildId)
 
-		if (!queue) return await interaction.editReply("There are no songs in the queue")
+		if (!queue) return await interaction.editReply("No pedradas na fila :(")
 
 		queue.tracks.shuffle();
-        await interaction.editReply(`The queue of ${queue.size} songs have been shuffled!`)
+        await interaction.editReply(`A fila de ${queue.size} musicas foi embaralhada!`)
 	},
 }
