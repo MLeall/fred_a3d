@@ -11,6 +11,7 @@ RUN apt-get update && \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
+# Create app directory
 WORKDIR /usr/src/app
 
 # Copy package files
@@ -30,4 +31,4 @@ RUN useradd -m discordbot && \
 USER discordbot
 
 # Start the bot
-CMD [ "npm", "start" ]
+CMD [ "node", "src/index.js" ]
