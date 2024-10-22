@@ -25,7 +25,7 @@ module.exports = {
     );
     if (!completeMember.voice.channel)
       return interaction.editReply(
-        "You need to be in a VC to use this command"
+        "Entre em um chat de voz para utilizar esse comando"
       );
 
     const queue = await client.player.nodes.create(interaction.guild, {

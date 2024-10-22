@@ -5,18 +5,18 @@ const { useQueue } = require("discord-player");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("queue")
-    .setDescription("displays the current song queue")
+    .setDescription("Exibe a fila")
     .addNumberOption((option) =>
       option
         .setName("page")
-        .setDescription("Page number of the queue")
+        .setDescription("Numero da página da fila")
         .setMinValue(1)
     ),
 
   run: async ({ interaction }) => {
     const queue = useQueue(interaction.guildId);
     if (!queue || !queue.isPlaying()) {
-      return await interaction.editReply("There are no songs in the queue");
+      return await interaction.editReply("Sem músicas na sua fila");
     }
 
     const totalPages = Math.ceil(queue.size / 10) || 1;
@@ -24,7 +24,7 @@ module.exports = {
 
     if (page > totalPages)
       return await interaction.editReply(
-        `Invalid Page. There are only a total of ${totalPages} pages of songs`
+        `Página invalida. Há apenas ${totalPages} páginas de músicas.`
       );
 
     const queueString = queue.tracks.data
@@ -40,14 +40,14 @@ module.exports = {
       embeds: [
         new EmbedBuilder()
           .setDescription(
-            `**Currently Playing**\n` +
+            `**Tocando Agora**\n` +
               (currentSong
                 ? `\`[${currentSong.duration}]\` ${currentSong.title} -- <@${currentSong.requestedBy.id}>`
-                : "None") +
-              `\n\n**Queue**\n${queueString}`
+                : "Nenhuma") +
+              `\n\n**Fila**\n${queueString}`
           )
           .setFooter({
-            text: `Page ${page + 1} of ${totalPages}`,
+            text: `Página ${page + 1} de ${totalPages}`,
           })
           .setThumbnail(currentSong.setThumbnail),
       ],
