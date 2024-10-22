@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  bot:
+    build: .
+    environment:
+      - NODE_ENV=production
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - CLIENT_ID=${CLIENT_ID}
+    restart: unless-stopped
