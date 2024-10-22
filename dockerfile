@@ -1,4 +1,15 @@
-FROM node:18-slim
+FROM node:16-bullseye
+
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    python3-pip \
+    build-essential \
+    libtool-bin \
+    autoconf \
+    automake \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
@@ -15,7 +26,8 @@ COPY . .
 RUN useradd -m discordbot && \
     chown -R discordbot:discordbot /usr/src/app
 
+# Switch to non-root user
 USER discordbot
 
 # Start the bot
-CMD [ "node", "src/index.js" ]
+CMD [ "npm", "start" ]
