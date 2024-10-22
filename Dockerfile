@@ -1,4 +1,4 @@
-FROM node:16-bullseye
+FROM node:18-bullseye
 
 RUN apt-get update && \
     apt-get install -y \
@@ -29,6 +29,13 @@ RUN useradd -m discordbot && \
 
 # Switch to non-root user
 USER discordbot
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# Expose the port
+EXPOSE 8080
 
 # Start the bot
 CMD [ "node", "src/index.js" ]
