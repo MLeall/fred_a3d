@@ -1,14 +1,18 @@
 const Discord = require("discord.js");
-const dotenv = require("dotenv");
 const { GatewayIntentBits } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { Player } = require("discord-player");
 const fs = require("fs");
+const path = require("path");
 
-dotenv.config();
-const TOKEN = process.env.TOKEN;
+const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
+
+if (!TOKEN || !CLIENT_ID) {
+  console.error("Required environment variables are missing!");
+  process.exit(1);
+}
 
 const client = new Discord.Client({
   intents: [
@@ -28,18 +32,17 @@ client.player = new Player(client, {
   },
 });
 
-// Load slash commands
-let commands = [];
 const slashFiles = fs
-  .readdirSync("./slash")
+  .readdirSync(path.join(__dirname, "slash"))
   .filter((file) => file.endsWith(".js"));
+
+let commands = [];
 for (const file of slashFiles) {
-  const slashcmd = require(`./slash/${file}`);
+  const slashcmd = require(path.join(__dirname, "slash", file));
   client.slashcommands.set(slashcmd.data.name, slashcmd);
   commands.push(slashcmd.data.toJSON());
 }
 
-// Function to deploy commands to a guild
 async function deployCommands(guildId) {
   try {
     const rest = new REST({ version: "9" }).setToken(TOKEN);
@@ -87,6 +90,33 @@ client.on("interactionCreate", (interaction) => {
     await slashcmd.run({ client, interaction });
   }
   handleCommand();
+});
+
+// Handle bot statuses
+client.player.on("error", (queue, error) => {
+  console.error(`Player error: ${error.message}`);
+  queue.metadata.channel.send(`An error occurred: ${error.message}`);
+});
+
+client.on("error", (error) => {
+  console.error("Discord client error:", error);
+});
+
+client.on("disconnect", () => {
+  console.log("Bot disconnected! Attempting to reconnect...");
+});
+
+client.on("reconnecting", () => {
+  console.log("Bot reconnecting...");
+});
+
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
+});
+
+client.login(TOKEN).catch((error) => {
+  console.error("Failed to login:", error);
+  process.exit(1);
 });
 
 client.login(TOKEN);
