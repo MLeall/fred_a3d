@@ -9,11 +9,15 @@ module.exports = {
     const queue = useQueue(interaction.guildId);
 
     if (!queue)
-      return await interaction.editReply("There are no songs in the queue");
+      return await interaction.editReply("Sem músicas para pausar :(");
 
-    queue.node.setPaused(!queue.node.isPaused());
-    await interaction.editReply(
-      "Music has been paused! Use `/resume` to resume the music"
-    );
+    if (!queue.dispatcher.isPaused()) {
+      queue.node.setPaused(!queue.node.isPaused());
+      await interaction.editReply(
+        "Música pausada! Use `/resume` pra voltar com o som"
+      );
+    } else {
+      await interaction.editReply("A música ja está pausada.");
+    }
   },
 };
