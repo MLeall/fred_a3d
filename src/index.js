@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const http = require("http");
 
-const TOKEN = process.env.DISCORD_TOKEN;
+const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const PORT = process.env.PORT || 8080;
 
