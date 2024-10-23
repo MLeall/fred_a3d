@@ -5,6 +5,7 @@ const { Routes } = require("discord-api-types/v9");
 const { Player } = require("discord-player");
 const fs = require("fs");
 const path = require("path");
+const http = require("http");
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;

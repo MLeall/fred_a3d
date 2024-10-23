@@ -1,9 +1,9 @@
 version: "3.8"
 services:
-  bot:
+  freda3d:
     build: .
     environment:
       - NODE_ENV=production
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - TOKEN=${TOKEN}
       - CLIENT_ID=${CLIENT_ID}
     restart: unless-stopped
