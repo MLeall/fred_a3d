@@ -21,7 +21,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy source code
-COPY . .
+COPY src ./src
 
 # Create a non-root user
 RUN useradd -m discordbot && \
