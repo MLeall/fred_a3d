@@ -1,15 +1,13 @@
-FROM node:18-bullseye
+FROM node:18-alpine
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN apk add --no-cache \
     python3 \
-    python3-pip \
-    build-essential \
-    libtool-bin \
+    py3-pip \
+    build-base \
+    libtool \
     autoconf \
     automake \
-    cmake \
-    && rm -rf /var/lib/apt/lists/*
+    cmake
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -24,7 +22,7 @@ RUN npm install
 COPY src ./src
 
 # Create a non-root user
-RUN useradd -m discordbot && \
+RUN adduser -D discordbot && \
     chown -R discordbot:discordbot /usr/src/app
 
 # Switch to non-root user
@@ -38,4 +36,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Start the bot
-CMD [ "node", "src/index.js" ]
+CMD ["npm", "run", "start"]

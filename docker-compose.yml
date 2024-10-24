@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   freda3d:
     build: .
@@ -7,3 +6,4 @@ services:
       - TOKEN=${TOKEN}
       - CLIENT_ID=${CLIENT_ID}
     restart: unless-stopped
+    command: ["node", "--trace-warnings", "src/index.js"]
