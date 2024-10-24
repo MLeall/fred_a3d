@@ -5,25 +5,14 @@ const { Routes } = require("discord-api-types/v9");
 const { Player } = require("discord-player");
 const fs = require("fs");
 const path = require("path");
-const http = require("http");
 
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
-const PORT = process.env.PORT || 8080;
 
 if (!TOKEN || !CLIENT_ID) {
   console.error("Required environment variables are missing!");
   process.exit(1);
 }
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end("Discord bot is running!");
-});
-
-server.listen(PORT, () => {
-  console.log(`HTTP Server running on port ${PORT}`);
-});
 
 const client = new Discord.Client({
   intents: [
@@ -101,23 +90,6 @@ client.on("interactionCreate", (interaction) => {
     await slashcmd.run({ client, interaction });
   }
   handleCommand();
-});
-
-process.on("unhandledRejection", (error) => {
-  console.error("Unhandled promise rejection:", error);
-});
-
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("HTTP server closed.");
-    client.destroy();
-    process.exit(0);
-  });
-});
-
-process.on("unhandledRejection", (error) => {
-  console.error("Unhandled promise rejection:", error);
 });
 
 // Handle bot statuses
