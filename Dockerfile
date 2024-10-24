@@ -28,12 +28,5 @@ RUN adduser -D discordbot && \
 # Switch to non-root user
 USER discordbot
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=8080
-
-# Expose the port
-EXPOSE 8080
-
 # Start the bot
 CMD ["npm", "run", "start"]
