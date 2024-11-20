@@ -1,10 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
 const { QueryType } = require("discord-player");
-const {
-  YouTubeExtractor,
-  SpotifyExtractor,
-} = require("@discord-player/extractor");
+const { YoutubeiExtractor } = require("discord-player-youtubei");
+const { SpotifyExtractor } = require("@discord-player/extractor");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,7 +15,7 @@ module.exports = {
         .setRequired(true)
     ),
   run: async ({ client, interaction }) => {
-    client.player.extractors.register(YouTubeExtractor);
+    client.player.extractors.register(YoutubeiExtractor);
     client.player.extractors.register(SpotifyExtractor);
 
     const completeMember = await interaction.guild.members.fetch(
